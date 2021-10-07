@@ -1,4 +1,4 @@
-Excercice de développeur backend
+Exercice de développeur backend
 ==
 
 # Description
