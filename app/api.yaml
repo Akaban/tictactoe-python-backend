@@ -1,0 +1,127 @@
+openapi: 3.0.0
+info:
+  description: API of a tic tac toe game
+  version: "0.1"
+  title: Tic Tac Toe
+servers:
+  - url: /api/
+
+paths:
+  /version:
+    get:
+      operationId: app.api.get_version
+      summary: Get application version
+      responses:
+        200:
+          description: Version
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+  /games:
+    post:
+      operationId: app.api.create_game
+      summary: Create a new game
+      responses:
+        200:
+          description: The newly created game
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+  /games/{game_id}:
+    get:
+      operationId: app.api.get_game
+      summary: Get a game by ID
+      parameters:
+       - name: game_id
+         in: path
+         description: ID of the game
+         required: true
+         schema:
+           type: integer
+      responses:
+        200:
+          description: The game
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+        404:
+          description: No game found
+    patch:
+      operationId: app.api.place_mark
+      summary: Place a mark in a given cell
+      requestBody:
+        description: Mark information
+        required: true
+        content:
+          application/json:
+            schema:
+              x-body-name: mark
+              type: object
+              properties:
+                row:
+                  description: Cell's row position
+                  type: integer
+                  minimum: 0
+                  maximum: 2
+                col:
+                  description: Cell's column position
+                  type: integer
+                  minimum: 0
+                  maximum: 2
+                player:
+                  type: string
+                  enum: [ X, O ]
+      parameters:
+        - name: game_id
+          in: path
+          description: ID of the game
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: The game
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+        400:
+          description: Invalid input or Can't place mark here
+        404:
+          description: No game found
+components:
+  schemas:
+    Game:
+      type: object
+      properties:
+        id:
+          type: integer
+        winner:
+          type: string
+          nullable: true
+          enum: [X, O]
+        is_over:
+          type: boolean
+        current_player:
+          type: string
+          nullable: true
+          enum: [ X, O ]
+        grid:
+          description: "
+            The game grid represented as a flatten array with 9 values. e.g :
+              - Index 0: first row, first column
+              - Index 1: first row, second column
+              - Index 4: second row, first column
+              - Index 9: third row, third column
+          "
+          type: array
+          items:
+            type: string
+            nullable: true
+            enum: [X, O]
